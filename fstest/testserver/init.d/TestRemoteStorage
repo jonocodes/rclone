@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# armadietto (classic server, draft -10) in Docker for TestRemoteStorage:.
+# Creates a user and approves the OAuth consent form to mint a *:rw token.
+
+set -e
+
+NAME=rclone-remotestorage-armadietto
+PORT=28642
+# Pinned by digest: the image only has a latest tag (pushed 2026-03-23)
+IMAGE=docker.io/remotestorage/armadietto-monolithic@sha256:8b3fc8a4ae17612c728a3a4ffabb90a1fa47fcc2ef8126031183a7280a197928
+CLIENT=http://127.0.0.1:53682
+
+. $(dirname "$0")/docker.bash
+
+start() {
+    docker run --rm -d --name $NAME -p 127.0.0.1:${PORT}:8000 $IMAGE >/dev/null
+    local base=http://127.0.0.1:${PORT} user=rclone pass=rclonepass1
+    for _ in $(seq 60); do curl -sf -o /dev/null $base/ && break; sleep 0.5; done
+    curl -sf -o /dev/null -X POST $base/signup \
+         --data "username=$user&email=$user@example.com&password=$pass"
+    # The token comes back in the fragment of the consent form's redirect
+    local loc token
+    loc=$(curl -s -o /dev/null -w '%{redirect_url}' -X POST $base/oauth \
+          --data-urlencode "client_id=$CLIENT" --data-urlencode "redirect_uri=$CLIENT/" \
+          --data "response_type=token&scope=*:rw&username=$user&password=$pass&allow=Allow")
+    token=$(sed -n 's/.*[#&]access_token=\([^&]*\).*/\1/p' <<<"$loc")
+    [ -n "$token" ] || { echo "failed to mint token (redirect: $loc)" >&2; return 1; }
+
+    echo type=remotestorage
+    echo storage_root=$base/storage/$user
+    echo token=$token
+    echo vendor=armadietto
+    echo _connect=127.0.0.1:${PORT}
+}
+
+. $(dirname "$0")/run.bash

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# RSilo (draft -22) offline server in Docker for TestRemoteStorageRSilo:.
+# Mints a *:rw token with RSilo's dev-token script inside the container.
+#
+#   RSILO_IMAGE  image to run, e.g. a local build of an RSilo branch
+#                (default: ghcr.io/jonocodes/rsilo:0.3.0)
+
+set -e
+
+NAME=rclone-remotestorage-rsilo
+PORT=28643
+IMAGE=${RSILO_IMAGE:-ghcr.io/jonocodes/rsilo:0.3.0}
+
+. $(dirname "$0")/docker.bash
+
+start() {
+    docker run --rm -d --name $NAME -p 127.0.0.1:${PORT}:8787 $IMAGE >/dev/null
+    local base=http://127.0.0.1:${PORT}
+    for _ in $(seq 60); do curl -sf -o /dev/null $base/health && break; sleep 0.5; done
+    local token
+    token=$(docker exec $NAME bun src/scripts/dev-token.ts alice '*:rw' </dev/null 2>/dev/null | tail -1)
+    [ -n "$token" ] || { echo "failed to mint token" >&2; return 1; }
+
+    echo type=remotestorage
+    echo storage_root=$base/storage/alice
+    echo token=$token
+    echo _connect=127.0.0.1:${PORT}
+}
+
+. $(dirname "$0")/run.bash

@@ -85,6 +85,7 @@ See the following for detailed instructions for
 - [Proton Drive](/protondrive/)
 - [QingStor](/qingstor/)
 - [Quatrix by Maytech](/quatrix/)
+- [remoteStorage](/remotestorage/)
 - [rsync.net](/sftp/#rsync-net)
 - [Seafile](/seafile/)
 - [SFTP](/sftp/)

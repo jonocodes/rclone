@@ -34,6 +34,8 @@ They should be bound to localhost so they are not accessible externally.
 | 28639 | TestWebdavInfiniteScale |
 | 28640 | TestSia |
 | 28641 | TestWebdavOwncloud |
+| 28642 | TestRemoteStorage |
+| 28643 | TestRemoteStorageRSilo |
 
 ## Non localhost tests
 

@@ -771,3 +771,13 @@ backends:
      - TestIndexChangedDirTime
    fastlist: true
    extratime: 2.0
+ - backend:  "remotestorage"
+   remote:   "TestRemoteStorage:"
+   fastlist: false
+   ignoretests:
+     - cmd/gitannex
+ - backend:  "remotestorage"
+   remote:   "TestRemoteStorageRSilo:"
+   fastlist: false
+   ignoretests:
+     - cmd/gitannex

@@ -89,6 +89,7 @@ docs = [
     "protondrive.md",
     "putio.md",
     "protondrive.md",
+    "remotestorage.md",
     "seafile.md",
     "sftp.md",
     "shade.md",

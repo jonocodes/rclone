@@ -1,0 +1,19 @@
+backend: remotestorage
+name: remoteStorage
+tier: Tier 4
+maintainers: External
+features_score: 1
+integration_tests: Unknown
+data_integrity: Other
+performance: Medium
+adoption: New
+docs: Full
+security: High
+virtual: false
+remote: 'TestRemoteStorage:'
+features:
+- PutStream
+- ReadMimeType
+- WriteMimeType
+hashes: []
+precision: 3153600000000000000
